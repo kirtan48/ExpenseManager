@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".views.fragments.AddTransactionFragment"
+    android:background="@drawable/dialog_bg"
+    android:backgroundTint="@color/white">
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_income"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="INCOME"
+            android:textSize="15dp"
+            android:background="@drawable/default_selector"
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_margin="10dp"/>
+        <TextView
+            android:id="@+id/tv_expense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Expense"
+            android:textSize="15dp"
+
+            android:background="@drawable/default_selector"
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Select Date"
+            android:focusable="false"
+
+            android:id="@+id/select_date"/>
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Amount"
+                android:inputType="number"
+                android:id="@+id/amt"/>
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Category"
+                android:focusable="false"
+                android:id="@+id/category"/>
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <Spinner
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/spinner"
+            android:layout_gravity="center"
+            android:padding="0dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/spinner_background"
+
+            android:autofillHints="Avaialble | Hey let Us Connect"/>
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Note"
+                android:id="@+id/note"/>
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Save Transaction"
+            android:id="@+id/btn_save"
+             />
+    </LinearLayout>
+
+
+
+</ScrollView>
+
+</FrameLayout>

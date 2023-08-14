@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">ExpenseManager</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="Account">
+        <item>Cash</item>
+        <item>Gpay</item>
+        <item>Paytm</item>
+        <item>Bank Account</item>
+
+    </string-array>
+</resources>

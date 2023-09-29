@@ -8,6 +8,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,14 +21,24 @@ import com.example.expensemanager.R
 import com.example.expensemanager.databinding.FragmentAddTransactionBinding
 import com.example.expensemanager.databinding.ListDialogBinding
 import com.example.expensemanager.model.Category
+import com.example.expensemanager.model.Transaction
+import com.example.expensemanager.views.activitis.MainActivity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import io.realm.Realm
+import io.realm.kotlin.internal.platform.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.UUID
 
 
-class AddTransactionFragment : BottomSheetDialogFragment() {
+public class AddTransactionFragment : BottomSheetDialogFragment() {
     private lateinit var categoriesAdapter:CategoryAdapter
+    private lateinit var realm:Realm
+    val categories=ArrayList<Category>()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,15 +52,23 @@ class AddTransactionFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        var flag=0
+
 
         var binding:FragmentAddTransactionBinding=FragmentAddTransactionBinding.inflate(inflater)
+        binding.tvIncome.setBackgroundResource(com.example.expensemanager.R.drawable.income_selector)
+        binding.tvIncome.setTextColor(Color.parseColor("#4CAF50"))
+        binding.tvExpense.setTextColor(Color.parseColor("#353535"))
+        binding.tvExpense.setBackgroundResource(com.example.expensemanager.R.drawable.default_selector)
         binding.tvIncome.setOnClickListener{
+            flag=0
             binding.tvIncome.setBackgroundResource(com.example.expensemanager.R.drawable.income_selector)
             binding.tvIncome.setTextColor(Color.parseColor("#4CAF50"))
             binding.tvExpense.setTextColor(Color.parseColor("#353535"))
             binding.tvExpense.setBackgroundResource(com.example.expensemanager.R.drawable.default_selector)
         }
         binding.tvExpense.setOnClickListener{
+            flag=1
             binding.tvExpense.setBackgroundResource(com.example.expensemanager.R.drawable.expense_selector)
             binding.tvIncome.setBackgroundResource(com.example.expensemanager.R.drawable.default_selector)
             binding.tvExpense.setTextColor(Color.parseColor("#F44336"))
@@ -59,7 +78,8 @@ class AddTransactionFragment : BottomSheetDialogFragment() {
         val year=myCalendar.get(Calendar.YEAR)
         val month=myCalendar.get(Calendar.MONTH)
         val day=myCalendar.get(Calendar.DAY_OF_MONTH)
-        binding.selectDate.setText("$day/${month+1}/$year")
+        if(month+1<10)binding.selectDate.setText("$day/0${month+1}/$year")
+        else binding.selectDate.setText("$day/0${month+1}/$year")
         binding.selectDate.setOnClickListener{
             val myCalendar = Calendar.getInstance()
             val year=myCalendar.get(Calendar.YEAR)
@@ -68,11 +88,14 @@ class AddTransactionFragment : BottomSheetDialogFragment() {
 
             val dpd= DatePickerDialog(context as AppCompatActivity,
                 {_,selectedYear,selectedMonth,dayOfMonth ->
+                  //  if(selectedMonth+1<10)selectedMonth=("0"+selectedMonth.toString()).toInt()
 
-                    val SelectedDate="$dayOfMonth/${selectedMonth+1}/$selectedYear"
-                    binding.selectDate.setText(SelectedDate)
+                    val  SelectedDate="$dayOfMonth/${selectedMonth+1}/$selectedYear"
+                   // binding.selectDate.setText(SelectedDate)
                     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
-                    val theDate = sdf.parse(SelectedDate)
+                    val theDate = sdf.format(sdf.parse(SelectedDate))
+                    Log.d("msg+",theDate.toString())
+                    binding.selectDate.setText(theDate)
                 },
                 year,
                 month,
@@ -80,18 +103,50 @@ class AddTransactionFragment : BottomSheetDialogFragment() {
 
             dpd.show()
         }
+
+
+
+        binding.btnSave.setOnClickListener {
+            Realm.init(context)
+            realm= Realm.getDefaultInstance()
+
+            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
+            runBlocking {
+                 launch(Dispatchers.IO) {
+                     val realm = Realm.getDefaultInstance()
+                     val uniquePrimaryKeyValue = UUID.randomUUID().toString()
+                     realm.executeTransaction{
+                         val task = realm.createObject(Transaction::class.java,uniquePrimaryKeyValue)
+                         if(flag==0)task.type="Income"
+                         else task.type="Expense"
+
+
+                         task.category=binding.category.text.toString()
+                         task.amount=binding.amt.text.toString().toInt()
+                         task.account=binding.spinner.selectedItem.toString()
+                         task.note=binding.note.text.toString()
+                         task.date=binding.selectDate.text.toString()
+                         Log.d("msg",binding.selectDate.text.toString())
+
+                     }
+                 }
+             }
+
+            dismiss()
+        }
         binding.category.setOnClickListener {
             val dialogBinding = ListDialogBinding.inflate(inflater)
             val categoryDialog: AlertDialog = AlertDialog.Builder(context).create()
             categoryDialog.setView(dialogBinding.root)
-            val categories=ArrayList<Category>()
 
-            categories.add(Category("Salary", R.drawable.ic_salary,R.color.category2))
-            categories.add(Category("Business", R.drawable.ic_business, R.color.category2))
-            categories.add(Category("Investment", R.drawable.ic_investment, R.color.category3))
-            categories.add(Category("Loan", R.drawable.ic_loan,R.color.category4))
-            categories.add(Category("Rent", R.drawable.ic_rent, R.color.category5))
-            categories.add(Category("Other", R.drawable.ic_other,R.color.category6))
+
+            categories.add(Category("Salary", R.drawable.ic_salary,"#4CAF50"))
+            categories.add(Category("Business", R.drawable.ic_business, "#F44336"))
+            categories.add(Category("Investment", R.drawable.ic_investment, "#F44336"))
+            categories.add(Category("Loan", R.drawable.ic_loan,"#9C27B0"))
+            categories.add(Category("Rent", R.drawable.ic_rent, "#E91E63"))
+            categories.add(Category("Other", R.drawable.ic_other,"#877606"))
+
             val categoriesAdapter = CategoryAdapter { selectedCategory ->
 
                 categoryDialog.dismiss()
@@ -128,6 +183,14 @@ class AddTransactionFragment : BottomSheetDialogFragment() {
         spinner.adapter = adapter
         return binding.root
 
+    }
+    fun getCategoryDetails(categoryName: String?): Category? {
+        for (cat in categories) {
+            if (cat.categoryName == categoryName) {
+                return cat
+            }
+        }
+        return null
     }
 
 
